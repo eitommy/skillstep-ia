@@ -1,5 +1,4 @@
 import streamlit as st
-from openai import OpenAI
 
 st.set_page_config(
     page_title="SkillStep IA",
@@ -12,8 +11,8 @@ st.subheader("Tu asistente inteligente para aprender habilidades paso a paso")
 
 st.write(
     "SkillStep IA te ayuda a crear un plan personalizado para aprender una habilidad. "
-    "Solo tenés que completar algunos datos y la inteligencia artificial generará una guía "
-    "organizada con pasos, retos y recomendaciones."
+    "Completás algunos datos y la aplicación genera una guía organizada con pasos, "
+    "retos y recomendaciones."
 )
 
 st.divider()
@@ -37,7 +36,7 @@ tiempo = st.selectbox(
 
 objetivo = st.text_area(
     "¿Cuál es tu objetivo final?",
-    placeholder="Ejemplo: crear mi primera página web, mantener una conversación en inglés, diseñar un logo..."
+    placeholder="Ejemplo: crear mi primera página web, mantener una conversación en inglés..."
 )
 
 plazo = st.selectbox(
@@ -52,65 +51,147 @@ st.header("Cómo funciona")
 st.write(
     """
     1. Completás los datos sobre la habilidad que querés aprender.
-    2. La app toma esa información y construye un prompt personalizado.
-    3. La inteligencia artificial analiza tu situación.
+    2. La app analiza tu nivel, tiempo disponible y objetivo.
+    3. Se genera una salida dirigida basada en un prompt estructurado.
     4. Recibís un plan claro con etapas, retos y consejos.
     """
 )
 
 st.info(
-    "El resultado es una guía orientativa. El usuario puede adaptarla según sus necesidades, "
-    "tiempos y avances personales."
+    "Esta versión académica simula una respuesta de IA a partir de un prompt estructurado, "
+    "sin utilizar una API paga. La aplicación puede integrarse con un modelo de IA externo "
+    "en una futura versión."
 )
 
+
 def generar_plan(habilidad, nivel, tiempo, objetivo, plazo):
-    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+    if plazo == "2 semanas":
+        semanas = 2
+    elif plazo == "1 mes":
+        semanas = 4
+    elif plazo == "2 meses":
+        semanas = 8
+    elif plazo == "3 meses":
+        semanas = 12
+    else:
+        semanas = 24
 
-    prompt = f"""
-    Actuá como un mentor experto en aprendizaje personalizado.
+    if nivel == "Principiante":
+        enfoque = "empezar desde los conceptos básicos, evitando avanzar demasiado rápido."
+        dificultad = "básicos"
+    elif nivel == "Intermedio":
+        enfoque = "reforzar lo que ya sabés y aplicar la habilidad en ejercicios prácticos."
+        dificultad = "intermedios"
+    else:
+        enfoque = "perfeccionar la técnica, trabajar con desafíos complejos y mejorar la autonomía."
+        dificultad = "avanzados"
 
-    Tu tarea es crear un plan de aprendizaje claro, realista y progresivo para una persona
-    que quiere desarrollar una nueva habilidad.
+    return f"""
+## Plan personalizado para aprender {habilidad}
 
-    Datos del usuario:
-    - Habilidad a aprender: {habilidad}
-    - Nivel actual: {nivel}
-    - Tiempo disponible por semana: {tiempo}
-    - Objetivo final: {objetivo}
-    - Plazo deseado: {plazo}
+### 1. Diagnóstico inicial
 
-    Generá una respuesta con la siguiente estructura:
+Tu nivel actual es **{nivel}** y contás con **{tiempo} por semana** para practicar.  
+Tu objetivo principal es: **{objetivo}**.  
+El plazo estimado para alcanzar este objetivo es de **{plazo}**.
 
-    1. Diagnóstico inicial del usuario.
-    2. Objetivo principal reformulado de forma clara.
-    3. Plan semanal dividido en etapas.
-    4. Retos prácticos para cada semana.
-    5. Recursos o tipos de recursos recomendados.
-    6. Consejos para mantener la constancia.
-    7. Indicadores para medir el progreso.
+Según estos datos, lo más importante es {enfoque}
 
-    La respuesta debe ser clara, motivadora, realista y fácil de seguir.
-    No des información demasiado técnica si el usuario es principiante.
-    """
+---
 
-    respuesta = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": "Sos un asistente experto en crear planes educativos personalizados."
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0.7
-    )
+### 2. Objetivo principal reformulado
 
-    return respuesta.choices[0].message.content
+Desarrollar la habilidad de **{habilidad}** de manera progresiva, práctica y organizada, hasta poder lograr el siguiente objetivo:
 
-if st.button("Generar mi plan con IA"):
+**{objetivo}**
+
+---
+
+### 3. Plan de aprendizaje
+
+#### Etapa 1: Introducción y organización
+
+- Investigar qué conocimientos básicos necesitás para aprender {habilidad}.
+- Buscar ejemplos simples relacionados con tu objetivo.
+- Armar una lista de temas principales.
+- Definir días y horarios de práctica según tu disponibilidad.
+
+#### Etapa 2: Práctica guiada
+
+- Realizar ejercicios {dificultad}.
+- Seguir tutoriales o guías paso a paso.
+- Anotar dudas y errores frecuentes.
+- Repetir las prácticas más importantes hasta ganar confianza.
+
+#### Etapa 3: Aplicación práctica
+
+- Crear una actividad, ejercicio o mini proyecto relacionado con tu objetivo.
+- Aplicar lo aprendido en una situación real.
+- Comparar tu resultado con ejemplos de referencia.
+- Mejorar los puntos débiles detectados.
+
+#### Etapa 4: Revisión y mejora
+
+- Revisar todo lo trabajado.
+- Corregir errores.
+- Mejorar la presentación o calidad del resultado final.
+- Definir próximos pasos para seguir avanzando después del plazo inicial.
+
+---
+
+### 4. Retos prácticos sugeridos
+
+- Realizar al menos una práctica semanal relacionada con {habilidad}.
+- Guardar evidencia de tu progreso.
+- Explicar con tus palabras lo aprendido al final de cada semana.
+- Hacer una autoevaluación simple: qué entendí, qué me costó y qué debo mejorar.
+- Crear un resultado final relacionado con: **{objetivo}**.
+
+---
+
+### 5. Recursos recomendados
+
+- Videos introductorios.
+- Guías paso a paso.
+- Documentación o material básico.
+- Ejercicios prácticos.
+- Comunidades, foros o grupos relacionados con {habilidad}.
+- Ejemplos reales para comparar tu avance.
+
+---
+
+### 6. Consejos para mantener la constancia
+
+- Dividí el objetivo en tareas pequeñas.
+- No intentes aprender todo de golpe.
+- Practicá de forma regular, aunque sea poco tiempo.
+- Medí tu progreso semanalmente.
+- Ajustá el plan si tu disponibilidad cambia.
+- Priorizá la práctica sobre la teoría excesiva.
+
+---
+
+### 7. Indicadores para medir el progreso
+
+Podés medir tu avance observando:
+
+- Cantidad de prácticas realizadas.
+- Nivel de confianza con los conceptos.
+- Capacidad para explicar lo aprendido.
+- Reducción de errores.
+- Avance concreto hacia tu objetivo: **{objetivo}**.
+- Resultado final conseguido al terminar el plazo de **{plazo}**.
+
+---
+
+### 8. Recomendación final
+
+Durante aproximadamente **{semanas} semanas**, intentá mantener una rutina constante.  
+Lo más importante no es avanzar perfecto, sino avanzar de forma ordenada y sostenida.
+"""
+
+
+if st.button("Generar mi plan"):
     if habilidad and objetivo:
         with st.spinner("Generando tu plan personalizado..."):
             plan = generar_plan(habilidad, nivel, tiempo, objetivo, plazo)
