@@ -94,7 +94,7 @@ def generar_plan(habilidad, nivel, tiempo, objetivo, plazo):
     """
 
     respuesta = client.chat.completions.create(
-        model="gpt-5.4-mini",
+        model="gpt-4o-mini",
         messages=[
             {
                 "role": "system",
